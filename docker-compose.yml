@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  mariadb: 
+    image: mariadb:10.6.14
+    ports:
+    - 3306:3306
+    environment:
+      - MARIADB_DATABASE=database
+      - MARIADB_ROOT_PASSWORD=my-secret-pw
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=mypassword
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+    - 4001:4001
+    depends_on:
+      - mariadb
+      - mongo
+    environment:
+    - PORT=4001
+    - MARIADB_HOST=mariadb
+    - MARIADB_USER=username
+    - MARIADB_PASSWORD=password
+    - MONGODB_URL=mongodb://localhost:27017/
+
